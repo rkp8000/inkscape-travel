@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Travel</_name>
+    <id>travel.rkp8000.inkscape</id>
+    <dependency type="executable" location="extensions">travel.py</dependency>
+    <param name="active-tab" type="notebook">
+        <page name="options" _gui-text="Options">
+            <param name="x_scale" type="float" max="10000" precision="3" _gui-text="X scale:">0</param>
+            <param name="y_scale" type="float" max="10000" precision="3" _gui-text="Y scale:">0</param>
+            
+            <param name="t_start" type="float" max="10000" precision="3" _guit-text="start time">0</param>
+            <param name="t_end" type="float" max="10000" precision="3" _gui-text="end time">1</param>
+            <param name="fps" type="float" max="1000" precision="3" _gui-text="fps">30</param>
+            <param name="dt" type="float" max = "1000" precision="5" _gui-text="time interval">0.1</param>
+            
+            <param name="x" type="string" _gui-text="x(t):"></param>
+            <param name="y" type="string" _gui-text="y(t):"></param>
+           
+            <param name="x_size" type="string" _gui-text="x_size(t):"></param>
+            <param name="y_size" type="string" _gui-text="y_size(t):"></param>
+            
+            <param name="theta" type="string" _gui-text="theta(t):"></param>
+        </page>
+        <page name="help" _gui-text="Help">
+            <_param name="help" type="description" xml:space="preserve">
+                Tutorial extension for drawing a simple shape using Python.
+            </_param>
+        </page>
+    </param>
+    <effect>
+        <object-type>all</object-type>
+            <effects-menu>
+                <submenu _name="Render" />
+            </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">travel.py</command>
+    </script>
+</inkscape-extension>
