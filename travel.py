@@ -8,10 +8,12 @@ Simple inkscape extension for tutorial purposes.
 Code by Rich Pang (2018).
 """
 
+from __future__ import division
+
 import inkex, simplestyle
 import numpy as np
 
-__version__ = '1.0'
+__version__ = '0.1'
 
 inkex.localize()
 
@@ -50,7 +52,12 @@ class Travel(inkex.Effect):
             '', '--active-tab', action='store', type='string', dest='active_tab', default='options', help='active tab')
         
     def effect(self):
-        
+
+        # make sure rectangle is included in selection
+        # if ... raise ...
+
+        # get user-entered params
+
         x_scale = self.options.x_scale
         y_scale = self.options.y_scale
         
@@ -67,6 +74,8 @@ class Travel(inkex.Effect):
         
         theta = self.options.theta
         
+        # get selected rect params
+
         rect_id, rect = self.selected.iteritems().next()
         
         w = rect.get('width')
@@ -74,10 +83,42 @@ class Travel(inkex.Effect):
         
         x_rect = rect.get('x')
         y_rect = rect.get('y')
+
+        # get selected object params
+        # ... 
         
+        # get common numpy operations
+        abs = np.abs
+        sin = np.sin
+        cos = np.cos
+        tan = np.tan
+        exp = np.exp
+
+        # compute dt
+        if dt == 0:
+            dt = 1./fps
+
+        t = np.arange(t_start, t_end, dt)
+
+        # compute xs, ys, stretches, and rotations in arbitrary coordinates
+        xs = eval(x)
+        ys = eval(y)
+        x_sizes = eval(x_size)
+        y_sizes = eval(y_size)
+        thetas = eval(theta)
+
+        # convert to screen coordinates
+        # ...
         # for educative purposes: write user params to file
         with open('travel.log', 'w') as f:
             
+            f.write('t: {}\n\n'.format(t))
+
+            f.write('x(t) = {}\n'.format(x))
+            f.write('x: {}\n\n'.format(xs))
+            f.write('y(t) = {}\n'.format(y))
+            f.write('y: {}\n\n'.format(ys))
+
             f.write('USER PARAMS:\n\n')
             
             f.write('x_scale: {}\n'.format(x_scale))
