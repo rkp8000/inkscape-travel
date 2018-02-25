@@ -193,6 +193,7 @@ class Travel(inkex.Effect):
             f.write('np: {}\n'.format(np))
             
         parent = self.current_layer
+        group = inkex.etree.SubElement(parent, inkex.addNS('g', 'svg'), {})
 
         for x, y in zip(xs, ys):
             style = {
@@ -207,7 +208,7 @@ class Travel(inkex.Effect):
                 'cx': str(x),
                 'cy': str(y)
             }
-            circle = inkex.etree.SubElement(parent, inkex.addNS('circle','svg'), attribs )
+            circle = inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attribs )
 
         
 if __name__ == '__main__':
