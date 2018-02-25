@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from __future__ import division
 
-import inkex, simplestyle
+import inkex, simplestyle, pathmodifier
 import numpy as np
 
 __version__ = '0.1'
@@ -84,11 +84,19 @@ class Travel(inkex.Effect):
         y_size_eqn = self.options.y_size_eqn
         
         theta_eqn = self.options.theta_eqn
-        
-        # get selected rect params
 
-        rect_id, rect = self.selected.iteritems().next()
-        
+        # get selected items
+        selected = pathmodifier.zSort(self.document.getroot(), self.selected.keys())
+        # reverse so top zordered item is first
+        selected = selected[::-1]
+
+        if not selected:
+            raise Exception('No objects selected. See "help" for more usage.')
+
+        # get selected rect params
+        rect_id = selected[0]
+        rect = self.selected[rect_id]
+
         w = float(rect.get('width'))
         h = float(rect.get('height'))
         
@@ -107,6 +115,10 @@ class Travel(inkex.Effect):
         cos = np.cos
         tan = np.tan
         exp = np.exp
+        log = np.log
+        log10 = np.log10
+
+        pi = np.pi
 
         # compute dt
         if dt == 0:
@@ -129,7 +141,16 @@ class Travel(inkex.Effect):
             thetas[ctr] = eval(theta_eqn)
 
         # ensure no Infs
-        # ...
+        if np.any(np.isinf(xs)):
+            raise Exception('Inf detected in x(t), please remove.')
+        if np.any(np.isinf(ys)):
+            raise Exception('Inf detected in y(t), please remove.')
+        if np.any(np.isinf(x_sizes)):
+            raise Exception('Inf detected in x_size(t), please remove.')
+        if np.any(np.isinf(y_sizes)):
+            raise Exception('Inf detected in y_size(t), please remove.')
+        if np.any(np.isinf(thetas)):
+            raise Exception('Inf detected in theta(t), please remove.')
 
         # convert to screen coordinates
         xs *= (w/x_scale)
@@ -158,6 +179,8 @@ class Travel(inkex.Effect):
 
             f.write('theta(t) = {}\n'.format(theta_eqn))
             f.write('thetas: {}\n\n'.format(thetas))
+
+            f.write('SELECTED (Z-SORTED): {}\n\n'.format(selected))
 
             f.write('USER PARAMS:\n\n')
             
