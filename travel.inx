@@ -23,7 +23,7 @@
         </page>
         <page name="help" _gui-text="Help">
             <_param name="help" type="description" xml:space="preserve">
-                Tutorial extension for drawing a simple shape using Python.
+                Extension for copying an object along a precise parametric trajectory.
             </_param>
         </page>
     </param>
