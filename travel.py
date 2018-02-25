@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from __future__ import division
 
 from copy import deepcopy
-import inkex, pathmodifier, simplestyle, simplepath, simpletransform
+import inkex, cubicsuperpath, pathmodifier, simplestyle, simplepath, simpletransform
 import numpy as np
 
 __version__ = '0.1'
@@ -67,9 +67,6 @@ class Travel(inkex.Effect):
         
     def effect(self):
 
-        # make sure rectangle is included in selection
-        # if ... raise ...
-
         # get user-entered params
 
         x_scale = self.options.x_scale
@@ -88,6 +85,11 @@ class Travel(inkex.Effect):
         y_size_eqn = self.options.y_size_eqn
         
         theta_eqn = self.options.theta_eqn
+
+        # get doc root
+        svg = self.document.getroot()
+        doc_w = self.unittouu(svg.get('width'))
+        doc_h = self.unittouu(svg.get('height'))
 
         # get selected items
         selected = pathmodifier.zSort(self.document.getroot(), self.selected.keys())
@@ -180,6 +182,20 @@ class Travel(inkex.Effect):
         x_sizes *= (w/x_scale)
         y_sizes *= (h/y_scale)
 
+        # get obj center
+        b_box = simpletransform.refinedBBox(cubicsuperpath.CubicSuperPath(obj_p))
+        c_x = 0.5 * (b_box[0] + b_box[1])
+        c_y = 0.5 * (b_box[2] + b_box[3])
+
+        # get rotation anchor
+        if any([k.endswith('transform-center-x') for k in obj.keys()]):
+            k_r_x = [k for k in obj.keys() if k.endswith('transform-center-x')][0]
+            k_r_y = [k for k in obj.keys() if k.endswith('transform-center-y')][0]
+            r_x = c_x + float(obj.get(k_r_x))
+            r_y = c_y - float(obj.get(k_r_y))
+        else:
+            r_x, r_y = c_x, c_y
+
         paths = []
 
         # compute new paths
@@ -210,6 +226,10 @@ class Travel(inkex.Effect):
 
             f.write('theta(t) = {}\n'.format(theta_eqn))
             f.write('thetas: {}\n\n'.format(thetas))
+
+            f.write('DOCUMENT: \n\n')
+            f.write('doc w: {}\n'.format(doc_w))
+            f.write('doc_h: {}\n'.format(doc_h))
 
             f.write('SELECTED (Z-SORTED): {}\n\n'.format(selected))
 
@@ -246,12 +266,16 @@ class Travel(inkex.Effect):
             
             f.write('np: {}\n\n'.format(np))
 
-            f.write('OBJ PATH: {}\n\n'.format(obj_p))
+            f.write('OBJ PATH: {}\n'.format(obj_p))
+            f.write('OBJ BBOX: {}\n'.format(b_box))
+            f.write('OBJ CENTER: ({}, {})\n\n'.format(c_x, c_y))
+            f.write('OBJ ROTATION ANCHOR: ({}, {})'.format(r_x, r_y))
 
-            f.write('paths: \n\n')
+            f.write('transformed paths: \n\n')
 
             for path in paths:
                 f.write('{}\n'.format(path))
+
 
         parent = self.current_layer
         group = inkex.etree.SubElement(parent, inkex.addNS('g', 'svg'), {})
