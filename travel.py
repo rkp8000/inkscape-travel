@@ -182,21 +182,21 @@ class Travel(inkex.Effect):
             f.write('np: {}\n'.format(np))
             
         parent = self.current_layer
-        
-        style = {
-            'stroke'        : 'none',
-            'stroke-width'  : '1',
-            'fill'          : '#000000'
-        }
 
-        attribs = {
-            'style'     : simplestyle.formatStyle(style),
-            'height'    : str(50),
-            'width'     : str(50),
-            'x'         : str(0),
-            'y'         : str(0)
-        }
-        rect = inkex.etree.SubElement(parent, inkex.addNS('rect','svg'), attribs )
+        for x, y in zip(xs, ys):
+            style = {
+                'stroke': 'none',
+                'stroke-width': '1',
+                'fill': '#000000'
+            }
+
+            attribs = {
+                'style': simplestyle.formatStyle(style),
+                'r': str(2),
+                'cx': str(x),
+                'cy': str(y)
+            }
+            circle = inkex.etree.SubElement(parent, inkex.addNS('circle','svg'), attribs )
 
         
 if __name__ == '__main__':
