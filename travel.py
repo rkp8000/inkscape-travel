@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from __future__ import division
 
-import inkex, simplestyle, pathmodifier
+from copy import deepcopy
+import inkex, pathmodifier, simplestyle, simpletransform
 import numpy as np
 
 __version__ = '0.1'
@@ -91,11 +92,16 @@ class Travel(inkex.Effect):
         selected = selected[::-1]
 
         if not selected:
-            raise Exception('No objects selected. See "help" for more usage.')
+            inkex.errormsg('No objects selected. See "help" for usage.')
+            return
 
         # get selected rect params
         rect_id = selected[0]
         rect = self.selected[rect_id]
+
+        if not {'x', 'y', 'width', 'height'}.issubset(rect.keys()):
+            inkex.errormsg('Top object must be rect. See "help" for usage.')
+            return
 
         w = float(rect.get('width'))
         h = float(rect.get('height'))
@@ -106,9 +112,9 @@ class Travel(inkex.Effect):
         x_0 = x_rect
         y_0 = y_rect + h
 
-        # get selected object params
-        # ... 
-        
+        # get object to transform
+        obj = self.selected[selected[1]]
+
         # get common numpy operations
         abs = np.abs
         sin = np.sin
@@ -162,6 +168,18 @@ class Travel(inkex.Effect):
         x_sizes *= (w/x_scale)
         y_sizes *= (h/y_scale)
 
+        mats = []
+        # compute transformation matrices
+        for x, y, x_size, y_size, theta in zip(xs, ys, x_sizes, y_sizes, thetas):
+
+            # move object to page origin
+            mat = simpletransform.parseTransform('translate({},{})'.format(-x_0, -y_0))
+
+            # move object to x, y
+            # mat = simpletransform('translate({},{})'.format(x, y), mat)
+
+            mats.append(mat)
+
         # for educative purposes: write user params to file
         with open('travel.log', 'w') as f:
             
@@ -181,6 +199,8 @@ class Travel(inkex.Effect):
             f.write('thetas: {}\n\n'.format(thetas))
 
             f.write('SELECTED (Z-SORTED): {}\n\n'.format(selected))
+
+            f.write('OBJ: {}\n\n'.format(obj))
 
             f.write('USER PARAMS:\n\n')
             
