@@ -39,15 +39,15 @@ class Travel(inkex.Effect):
         self.OptionParser.add_option(
             '', '--dt', action='store', type='float', dest='dt', default=0.1, help='dt')
         self.OptionParser.add_option(
-            '', '--x', action='store', type='string', dest='x', default='', help='x')
+            '', '--x_eqn', action='store', type='string', dest='x_eqn', default='', help='x')
         self.OptionParser.add_option(
-            '', '--y', action='store', type='string', dest='y', default='', help='y')
+            '', '--y_eqn', action='store', type='string', dest='y_eqn', default='', help='y')
         self.OptionParser.add_option(
-            '', '--x_size', action='store', type='string', dest='x_size', default='', help='x size')
+            '', '--x_size_eqn', action='store', type='string', dest='x_size_eqn', default='', help='x size')
         self.OptionParser.add_option(
-            '', '--y_size', action='store', type='string', dest='y_size', default='', help='y size')
+            '', '--y_size_eqn', action='store', type='string', dest='y_size_eqn', default='', help='y size')
         self.OptionParser.add_option(
-            '', '--theta', action='store', type='string', dest='theta', default='', help='theta')
+            '', '--theta_eqn', action='store', type='string', dest='theta_eqn', default='', help='theta')
         self.OptionParser.add_option(
             '', '--active-tab', action='store', type='string', dest='active_tab', default='options', help='active tab')
         
@@ -66,23 +66,26 @@ class Travel(inkex.Effect):
         fps = self.options.fps
         dt = self.options.dt
         
-        x = self.options.x
-        y = self.options.y
+        x_eqn = self.options.x_eqn
+        y_eqn = self.options.y_eqn
         
-        x_size = self.options.x_size
-        y_size = self.options.y_size
+        x_size_eqn = self.options.x_size_eqn
+        y_size_eqn = self.options.y_size_eqn
         
-        theta = self.options.theta
+        theta_eqn = self.options.theta_eqn
         
         # get selected rect params
 
         rect_id, rect = self.selected.iteritems().next()
         
-        w = rect.get('width')
-        h = rect.get('height')
+        w = float(rect.get('width'))
+        h = float(rect.get('height'))
         
-        x_rect = rect.get('x')
-        y_rect = rect.get('y')
+        x_rect = float(rect.get('x'))
+        y_rect = float(rect.get('y'))
+
+        x_0 = x_rect
+        y_0 = y_rect + h
 
         # get selected object params
         # ... 
@@ -98,26 +101,52 @@ class Travel(inkex.Effect):
         if dt == 0:
             dt = 1./fps
 
-        t = np.arange(t_start, t_end, dt)
+        ts = np.arange(t_start, t_end, dt)
 
         # compute xs, ys, stretches, and rotations in arbitrary coordinates
-        xs = eval(x)
-        ys = eval(y)
-        x_sizes = eval(x_size)
-        y_sizes = eval(y_size)
-        thetas = eval(theta)
+        xs = np.nan * np.zeros(len(ts))
+        ys = np.nan * np.zeros(len(ts))
+        x_sizes = np.nan * np.zeros(len(ts))
+        y_sizes = np.nan * np.zeros(len(ts))
+        thetas = np.nan * np.zeros(len(ts))
+        
+        for ctr, t in enumerate(ts):
+            xs[ctr] = eval(x_eqn)
+            ys[ctr] = eval(y_eqn)
+            x_sizes[ctr] = eval(x_size_eqn)
+            y_sizes[ctr] = eval(y_size_eqn)
+            thetas[ctr] = eval(theta_eqn)
+
+        # ensure no Infs
+        # ...
 
         # convert to screen coordinates
-        # ...
+        xs *= (w/x_scale)
+        xs += x_0
+
+        ys *= (-h/y_scale)  # neg sign to invert y for inkscape screen
+        ys += y_0
+
+        x_sizes *= (w/x_scale)
+        y_sizes *= (h/y_scale)
+
         # for educative purposes: write user params to file
         with open('travel.log', 'w') as f:
             
             f.write('t: {}\n\n'.format(t))
 
-            f.write('x(t) = {}\n'.format(x))
+            f.write('x(t) = {}\n'.format(x_eqn))
             f.write('x: {}\n\n'.format(xs))
-            f.write('y(t) = {}\n'.format(y))
+            f.write('y(t) = {}\n'.format(y_eqn))
             f.write('y: {}\n\n'.format(ys))
+
+            f.write('x_size(t) = {}\n'.format(x_size_eqn))
+            f.write('x_sizes: {}\n\n'.format(x_sizes))
+            f.write('y_size(t) = {}\n'.format(y_size_eqn))
+            f.write('y_sizes: {}\n\n'.format(y_sizes))
+
+            f.write('theta(t) = {}\n'.format(theta_eqn))
+            f.write('thetas: {}\n\n'.format(thetas))
 
             f.write('USER PARAMS:\n\n')
             
@@ -130,13 +159,13 @@ class Travel(inkex.Effect):
             f.write('fps: {}\n'.format(fps))
             f.write('dt: {}\n\n'.format(dt))
             
-            f.write('x(t): {}\n'.format(x))
-            f.write('y(t): {}\n\n'.format(y))
+            f.write('x_eqn: {}\n'.format(x_eqn))
+            f.write('y_eqn: {}\n\n'.format(y_eqn))
             
-            f.write('x_size: {}\n'.format(x_size))
-            f.write('y_size: {}\n\n'.format(y_size))
+            f.write('x_size_eqn: {}\n'.format(x_size_eqn))
+            f.write('y_size_eqn: {}\n\n'.format(y_size_eqn))
             
-            f.write('theta: {}\n\n'.format(theta))
+            f.write('theta_eqn: {}\n\n'.format(theta_eqn))
             
             f.write('RECT PROPERTIES:\n\n')
             
