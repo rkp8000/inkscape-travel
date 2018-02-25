@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from __future__ import division
 
 from copy import deepcopy
-import inkex, pathmodifier, simplestyle, simpletransform
+import inkex, pathmodifier, simplestyle, simplepath, simpletransform
 import numpy as np
 
 __version__ = '0.1'
@@ -115,6 +115,12 @@ class Travel(inkex.Effect):
         # get object to transform
         obj = self.selected[selected[1]]
 
+        if not obj.tag.endswith('path'):
+            inkex.errormsg('Original object must be path. See "help" for usage.')
+            return
+
+        obj_p = simplepath.parsePath(obj.get('d'))
+
         # get common numpy operations
         abs = np.abs
         sin = np.sin
@@ -168,17 +174,18 @@ class Travel(inkex.Effect):
         x_sizes *= (w/x_scale)
         y_sizes *= (h/y_scale)
 
-        mats = []
-        # compute transformation matrices
+        paths = []
+
+        # compute new paths
         for x, y, x_size, y_size, theta in zip(xs, ys, x_sizes, y_sizes, thetas):
 
-            # move object to page origin
-            mat = simpletransform.parseTransform('translate({},{})'.format(-x_0, -y_0))
+            path = deepcopy(obj_p)
 
-            # move object to x, y
-            # mat = simpletransform('translate({},{})'.format(x, y), mat)
+            # move to origin
+            simplepath.translatePath(path, -x_0, -y_0)
+            simplepath.translatePath(path, x, y)
 
-            mats.append(mat)
+            paths.append(path)
 
         # for educative purposes: write user params to file
         with open('travel.log', 'w') as f:
@@ -201,6 +208,9 @@ class Travel(inkex.Effect):
             f.write('SELECTED (Z-SORTED): {}\n\n'.format(selected))
 
             f.write('OBJ: {}\n\n'.format(obj))
+
+            f.write('OBJ TAG: {}\n'.format(obj.tag))
+            f.write('OBJ KEYS: {}\n\n'.format(obj.keys()))
 
             f.write('USER PARAMS:\n\n')
             
@@ -228,30 +238,27 @@ class Travel(inkex.Effect):
             f.write('x: {}\n'.format(x_rect))
             f.write('y: {}\n'.format(y_rect))
             
-            f.write('SELECTED:\n\n')
-            
-            for a, b in self.selected.iteritems():
-                f.write('{}:\n{}\n\n'.format(a, list(b.items())))
-                
-            f.write('np: {}\n'.format(np))
-            
+            f.write('np: {}\n\n'.format(np))
+
+            f.write('OBJ PATH: {}\n\n'.format(obj_p))
+
+            f.write('paths: \n\n')
+
+            for path in paths:
+                f.write('{}\n'.format(path))
+
         parent = self.current_layer
         group = inkex.etree.SubElement(parent, inkex.addNS('g', 'svg'), {})
 
-        for x, y in zip(xs, ys):
-            style = {
-                'stroke': 'none',
-                'stroke-width': '1',
-                'fill': '#000000'
-            }
+        for path in paths:
 
             attribs = {
-                'style': simplestyle.formatStyle(style),
-                'r': str(2),
-                'cx': str(x),
-                'cy': str(y)
+                k: obj.get(k) for k in obj.keys()
             }
-            circle = inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attribs )
+
+            attribs['d'] = simplepath.formatPath(path)
+
+            obj_copy = inkex.etree.SubElement(group, obj.tag, attribs)
 
         
 if __name__ == '__main__':
