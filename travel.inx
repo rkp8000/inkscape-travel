@@ -10,9 +10,17 @@
             
             <param name="t_start" type="float" max="10000" precision="3" _guit-text="start time">0</param>
             <param name="t_end" type="float" max="10000" precision="3" _gui-text="end time">1</param>
-            <param name="fps" type="float" max="1000" precision="3" _gui-text="fps">30</param>
-            <param name="dt" type="float" max = "1000" precision="5" _gui-text="time interval">0.1</param>
-            
+
+            <_param name="timing" type="description" xml:space="preserve">
+                Specify one of the following:
+            </_param>
+            <param name="n_steps" type="int" max="1000" _gui-text="number of steps">10</param>
+            <param name="fps" type="float" max="1000" precision="3" _gui-text="fps">0</param>
+            <param name="dt" type="float" max = "1000" precision="5" _gui-text="time interval">0</param>
+
+            <_param name="eqns" type="description" xml:space="preserve">
+                Enter Python-interpretable equations as function of t.
+            </_param>
             <param name="x_eqn" type="string" _gui-text="x(t) = "></param>
             <param name="y_eqn" type="string" _gui-text="y(t) = "></param>
            

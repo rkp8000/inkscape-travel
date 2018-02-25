@@ -47,9 +47,11 @@ class Travel(inkex.Effect):
         self.OptionParser.add_option(
             '', '--t_end', action='store', type='float', dest='t_end', default=1, help='t_end')
         self.OptionParser.add_option(
-            '', '--fps', action='store', type='float', dest='fps', default=30, help='fps')
+            '', '--n_steps', action='store', type='int', dest='n_steps', default=10, help='num steps')
         self.OptionParser.add_option(
-            '', '--dt', action='store', type='float', dest='dt', default=0.1, help='dt')
+            '', '--fps', action='store', type='float', dest='fps', default=0, help='fps')
+        self.OptionParser.add_option(
+            '', '--dt', action='store', type='float', dest='dt', default=0, help='dt')
         self.OptionParser.add_option(
             '', '--x_eqn', action='store', type='string', dest='x_eqn', default='', help='x')
         self.OptionParser.add_option(
@@ -75,6 +77,7 @@ class Travel(inkex.Effect):
         
         t_start = self.options.t_start
         t_end = self.options.t_end
+        n_steps = self.options.n_steps
         fps = self.options.fps
         dt = self.options.dt
         
@@ -132,11 +135,14 @@ class Travel(inkex.Effect):
 
         pi = np.pi
 
-        # compute dt
-        if dt == 0:
-            dt = 1./fps
+        if not n_steps:
+            # compute dt
+            if dt == 0:
+                dt = 1./fps
 
-        ts = np.arange(t_start, t_end, dt)
+            ts = np.arange(t_start, t_end, dt)
+        else:
+            ts = np.linspace(t_start, t_end, n_steps)
 
         # compute xs, ys, stretches, and rotations in arbitrary coordinates
         xs = np.nan * np.zeros(len(ts))
