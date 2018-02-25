@@ -13,13 +13,13 @@
             <param name="fps" type="float" max="1000" precision="3" _gui-text="fps">30</param>
             <param name="dt" type="float" max = "1000" precision="5" _gui-text="time interval">0.1</param>
             
-            <param name="x" type="string" _gui-text="x(t):"></param>
-            <param name="y" type="string" _gui-text="y(t):"></param>
+            <param name="x_eqn" type="string" _gui-text="x(t) = "></param>
+            <param name="y_eqn" type="string" _gui-text="y(t) = "></param>
            
-            <param name="x_size" type="string" _gui-text="x_size(t):"></param>
-            <param name="y_size" type="string" _gui-text="y_size(t):"></param>
+            <param name="x_size_eqn" type="string" _gui-text="x_size(t) = "></param>
+            <param name="y_size_eqn" type="string" _gui-text="y_size(t) = "></param>
             
-            <param name="theta" type="string" _gui-text="theta(t):"></param>
+            <param name="theta_eqn" type="string" _gui-text="theta(t) = "></param>
         </page>
         <page name="help" _gui-text="Help">
             <_param name="help" type="description" xml:space="preserve">
