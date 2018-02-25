@@ -205,6 +205,15 @@ class Travel(inkex.Effect):
 
             # move to origin
             simplepath.translatePath(path, -x_0, -y_0)
+
+            # compute translated rotation anchor
+            r_x_shifted = r_x - x_0
+            r_y_shifted = r_y - y_0
+
+            # rotate
+            simplepath.rotatePath(path, -theta, cx=r_x_shifted, cy=r_y_shifted)
+
+            # move to final location
             simplepath.translatePath(path, x, y)
 
             paths.append(path)
