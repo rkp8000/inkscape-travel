@@ -158,7 +158,7 @@ class Travel(inkex.Effect):
             ys[ctr] = eval(y_eqn)
             x_sizes[ctr] = eval(x_size_eqn)
             y_sizes[ctr] = eval(y_size_eqn)
-            thetas[ctr] = eval(theta_eqn)
+            thetas[ctr] = eval(theta_eqn) * pi / 180
 
         # ensure no Infs
         if np.any(np.isinf(xs)):
