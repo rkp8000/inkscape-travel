@@ -114,6 +114,7 @@ class Travel(inkex.Effect):
         x_rect = float(rect.get('x'))
         y_rect = float(rect.get('y'))
 
+        # lower left corner
         x_0 = x_rect
         y_0 = y_rect + h
 
@@ -179,9 +180,6 @@ class Travel(inkex.Effect):
         ys *= (-h/y_scale)  # neg sign to invert y for inkscape screen
         ys += y_0
 
-        x_sizes *= (w/x_scale)
-        y_sizes *= (h/y_scale)
-
         # get obj center
         b_box = simpletransform.refinedBBox(cubicsuperpath.CubicSuperPath(obj_p))
         c_x = 0.5 * (b_box[0] + b_box[1])
@@ -206,15 +204,26 @@ class Travel(inkex.Effect):
             # move to origin
             simplepath.translatePath(path, -x_0, -y_0)
 
-            # compute translated rotation anchor
-            r_x_shifted = r_x - x_0
-            r_y_shifted = r_y - y_0
+            # move rotation anchor accordingly
+            r_x_1 = r_x - x_0
+            r_y_1 = r_y - y_0
 
-            # rotate
-            simplepath.rotatePath(path, -theta, cx=r_x_shifted, cy=r_y_shifted)
+            # scale
+            simplepath.scalePath(path, x_size, y_size)
+
+            # scale rotation anchor accordingly
+            r_x_2 = r_x_1 * x_size
+            r_y_2 = r_y_1 * y_size
 
             # move to final location
             simplepath.translatePath(path, x, y)
+
+            # move rotation anchor accordingly
+            r_x_3 = r_x_2 + x
+            r_y_3 = r_y_2 + y
+
+            # rotate
+            simplepath.rotatePath(path, -theta, cx=r_x_3, cy=r_y_3)
 
             paths.append(path)
 
