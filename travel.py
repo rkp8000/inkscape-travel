@@ -103,7 +103,7 @@ class Travel(inkex.Effect):
         doc_w = self.unittouu(svg.get('width'))
         doc_h = self.unittouu(svg.get('height'))
 
-        # get selected items
+        # get selected items and validate
         selected = pathmodifier.zSort(self.document.getroot(), self.selected.keys())
 
         if not selected:
@@ -113,14 +113,30 @@ class Travel(inkex.Effect):
             inkex.errormsg('Exactly two objects must be selected. See "help" for details.')
             return
 
-        # get rect params
-        rect_id = selected[0]
-        rect = self.selected[rect_id]
+        # rect
+        rect = self.selected[selected[0]]
 
-        if not {'x', 'y', 'width', 'height'}.issubset(rect.keys()):
-            inkex.errormsg('Top object must be rect. See "help" for usage.')
+        if not rect.tag.endswith('rect'):
+            inkex.errormsg('Bottom object must be rect. See "help" for usage.')
             return
 
+        # object
+        obj = self.selected[selected[1]]
+
+        if not (obj.tag.endswith('path') or obj.tag.endswith('g')):
+            inkex.errormsg('Original object must be path or group of paths. See "help" for usage.')
+            return
+        if obj.tag.endswith('g'):
+            children = obj.getchildren()
+            if not all([ch.tag.endswith('path') for ch in children]):
+                msg = 'All group elements must be paths, but they are: '
+                msg += ', '.join(['{}'.format(ch) for ch in children])
+                inkex.errormsg(msg)
+            objs = children
+        else:
+            objs = [obj]
+
+        # get rect params
         w = float(rect.get('width'))
         h = float(rect.get('height'))
 
@@ -131,27 +147,15 @@ class Travel(inkex.Effect):
         x_0 = x_rect
         y_0 = y_rect + h
 
-        # get object to transform
-        obj = self.selected[selected[1]]
-
-        if not (obj.tag.endswith('path') or obj.tag.endswith('g')):
-            inkex.errormsg('Original object must be path or group of paths. See "help" for usage.')
-            return
-        if obj.tag.endswith('g'):
-            msg = 'Group detected. '
-            msg += 'Obj: {}. '.format(obj)
-            children = obj.getchildren()
-            msg += 'Children: {}. '.format(', '.join(['{}'.format(ch) for ch in children]))
-            inkex.errormsg(msg)
-            return
-
+        # get object path(s)
+        obj_ps = [simplepath.parsePath(obj.get('d')) for obj in objs]
         obj_p = simplepath.parsePath(obj.get('d'))
 
+        # compute travel parameters
         if not n_steps:
             # compute dt
             if dt == 0:
                 dt = 1./fps
-
             ts = np.arange(t_start, t_end, dt)
         else:
             ts = np.linspace(t_start, t_end, n_steps)
