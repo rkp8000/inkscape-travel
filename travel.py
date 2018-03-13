@@ -25,6 +25,19 @@ from copy import deepcopy
 import inkex, cubicsuperpath, pathmodifier, simplestyle, simplepath, simpletransform
 import numpy as np
 
+
+# rename common numpy operations
+abs = np.abs
+sin = np.sin
+cos = np.cos
+tan = np.tan
+exp = np.exp
+log = np.log
+log10 = np.log10
+
+pi = np.pi
+
+
 __version__ = '0.1'
 
 inkex.localize()
@@ -68,7 +81,6 @@ class Travel(inkex.Effect):
     def effect(self):
 
         # get user-entered params
-
         x_scale = self.options.x_scale
         y_scale = self.options.y_scale
         
@@ -93,14 +105,15 @@ class Travel(inkex.Effect):
 
         # get selected items
         selected = pathmodifier.zSort(self.document.getroot(), self.selected.keys())
-        # reverse so top zordered item is first
-        selected = selected[::-1]
 
         if not selected:
             inkex.errormsg('No objects selected. See "help" for usage.')
             return
+        elif len(selected) != 2:
+            inkex.errormsg('Exactly two objects must be selected. See "help" for details.')
+            return
 
-        # get selected rect params
+        # get rect params
         rect_id = selected[0]
         rect = self.selected[rect_id]
 
@@ -110,7 +123,7 @@ class Travel(inkex.Effect):
 
         w = float(rect.get('width'))
         h = float(rect.get('height'))
-        
+
         x_rect = float(rect.get('x'))
         y_rect = float(rect.get('y'))
 
@@ -121,22 +134,18 @@ class Travel(inkex.Effect):
         # get object to transform
         obj = self.selected[selected[1]]
 
-        if not obj.tag.endswith('path'):
-            inkex.errormsg('Original object must be path. See "help" for usage.')
+        if not (obj.tag.endswith('path') or obj.tag.endswith('g')):
+            inkex.errormsg('Original object must be path or group of paths. See "help" for usage.')
+            return
+        if obj.tag.endswith('g'):
+            msg = 'Group detected. '
+            msg += 'Obj: {}. '.format(obj)
+            children = obj.getchildren()
+            msg += 'Children: {}. '.format(', '.join(['{}'.format(ch) for ch in children]))
+            inkex.errormsg(msg)
             return
 
         obj_p = simplepath.parsePath(obj.get('d'))
-
-        # get common numpy operations
-        abs = np.abs
-        sin = np.sin
-        cos = np.cos
-        tan = np.tan
-        exp = np.exp
-        log = np.log
-        log10 = np.log10
-
-        pi = np.pi
 
         if not n_steps:
             # compute dt
