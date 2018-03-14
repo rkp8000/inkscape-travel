@@ -149,6 +149,7 @@ class Travel(inkex.Effect):
 
         # get object path(s)
         obj_ps = [simplepath.parsePath(obj.get('d')) for obj in objs]
+        n_segs = [len(obj_p_) for obj_p_ in obj_ps]
         obj_p = sum(obj_ps, [])
 
         # compute travel parameters
@@ -199,6 +200,7 @@ class Travel(inkex.Effect):
         c_y = 0.5 * (b_box[2] + b_box[3])
 
         # get rotation anchor
+        # TODO: extract rotation anchor from group or path
         if any([k.endswith('transform-center-x') for k in obj.keys()]):
             k_r_x = [k for k in obj.keys() if k.endswith('transform-center-x')][0]
             k_r_y = [k for k in obj.keys() if k.endswith('transform-center-y')][0]
@@ -307,12 +309,12 @@ class Travel(inkex.Effect):
             for path in paths:
                 f.write('{}\n'.format(path))
 
-
         parent = self.current_layer
         group = inkex.etree.SubElement(parent, inkex.addNS('g', 'svg'), {})
 
         for path in paths:
 
+            # TODO: break combined paths into originals
             attribs = {
                 k: obj.get(k) for k in obj.keys()
             }
