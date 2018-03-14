@@ -149,7 +149,7 @@ class Travel(inkex.Effect):
 
         # get object path(s)
         obj_ps = [simplepath.parsePath(obj.get('d')) for obj in objs]
-        obj_p = simplepath.parsePath(obj.get('d'))
+        obj_p = sum(obj_ps, [])
 
         # compute travel parameters
         if not n_steps:
