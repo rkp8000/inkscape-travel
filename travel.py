@@ -42,6 +42,19 @@ __version__ = '0.1'
 
 inkex.localize()
 
+def split(l, sizes):
+    """Split a list into sublists of specific sizes."""
+    if not sum(sizes) == len(l):
+        raise ValueError('sum(sizes) must equal len(l)')
+
+    sub_lists = []
+    ctr = 0
+    for size in sizes:
+        sub_lists.append(l[ctr:ctr+size])
+        ctr += size
+
+    return sub_lists
+
 
 class Travel(inkex.Effect):
     
@@ -133,8 +146,10 @@ class Travel(inkex.Effect):
                 msg += ', '.join(['{}'.format(ch) for ch in children])
                 inkex.errormsg(msg)
             objs = children
+            is_group = True
         else:
             objs = [obj]
+            is_group = False
 
         # get rect params
         w = float(rect.get('width'))
@@ -200,7 +215,6 @@ class Travel(inkex.Effect):
         c_y = 0.5 * (b_box[2] + b_box[3])
 
         # get rotation anchor
-        # TODO: extract rotation anchor from group or path
         if any([k.endswith('transform-center-x') for k in obj.keys()]):
             k_r_x = [k for k in obj.keys() if k.endswith('transform-center-x')][0]
             k_r_y = [k for k in obj.keys() if k.endswith('transform-center-y')][0]
@@ -314,14 +328,28 @@ class Travel(inkex.Effect):
 
         for path in paths:
 
-            # TODO: break combined paths into originals
-            attribs = {
-                k: obj.get(k) for k in obj.keys()
-            }
+            if is_group:
+                group_ = inkex.etree.SubElement(group, inkex.addNS('g', 'svg'), {})
+                path_components = split(path, n_segs)
 
-            attribs['d'] = simplepath.formatPath(path)
+                for path_component, child in zip(path_components, children):
+                    attribs = {
+                        k: child.get(k) for k in obj.keys()
+                    }
 
-            obj_copy = inkex.etree.SubElement(group, obj.tag, attribs)
+                    attribs['d'] = simplepath.formatPath(path_component)
+
+                    child_copy = inkex.etree.SubElement(group_, child.tag, attribs)
+
+            else:
+                # TODO: break combined paths into originals
+                attribs = {
+                    k: obj.get(k) for k in obj.keys()
+                }
+
+                attribs['d'] = simplepath.formatPath(path)
+
+                obj_copy = inkex.etree.SubElement(group, obj.tag, attribs)
 
         
 if __name__ == '__main__':
