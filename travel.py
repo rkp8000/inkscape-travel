@@ -120,10 +120,10 @@ class Travel(inkex.Effect):
         selected = pathmodifier.zSort(self.document.getroot(), self.selected.keys())
 
         if not selected:
-            inkex.errormsg('No objects selected. See "help" for usage.')
+            inkex.errormsg('Exactly two objects must be selected: a rect and a template. See "help" for details.')
             return
         elif len(selected) != 2:
-            inkex.errormsg('Exactly two objects must be selected. See "help" for details.')
+            inkex.errormsg('Exactly two objects must be selected: a rect and a template. See "help" for details.')
             return
 
         # rect
@@ -137,14 +137,15 @@ class Travel(inkex.Effect):
         obj = self.selected[selected[1]]
 
         if not (obj.tag.endswith('path') or obj.tag.endswith('g')):
-            inkex.errormsg('Original object must be path or group of paths. See "help" for usage.')
+            inkex.errormsg('Template object must be path or group of paths. See "help" for usage.')
             return
         if obj.tag.endswith('g'):
             children = obj.getchildren()
             if not all([ch.tag.endswith('path') for ch in children]):
-                msg = 'All group elements must be paths, but they are: '
+                msg = 'All elements of group must be paths, but they are: '
                 msg += ', '.join(['{}'.format(ch) for ch in children])
                 inkex.errormsg(msg)
+                return
             objs = children
             is_group = True
         else:
@@ -163,7 +164,7 @@ class Travel(inkex.Effect):
         y_0 = y_rect + h
 
         # get object path(s)
-        obj_ps = [simplepath.parsePath(obj.get('d')) for obj in objs]
+        obj_ps = [simplepath.parsePath(obj_.get('d')) for obj_ in objs]
         n_segs = [len(obj_p_) for obj_p_ in obj_ps]
         obj_p = sum(obj_ps, [])
 
@@ -193,14 +194,19 @@ class Travel(inkex.Effect):
         # ensure no Infs
         if np.any(np.isinf(xs)):
             raise Exception('Inf detected in x(t), please remove.')
+            return
         if np.any(np.isinf(ys)):
             raise Exception('Inf detected in y(t), please remove.')
+            return
         if np.any(np.isinf(x_sizes)):
             raise Exception('Inf detected in x_size(t), please remove.')
+            return
         if np.any(np.isinf(y_sizes)):
             raise Exception('Inf detected in y_size(t), please remove.')
+            return
         if np.any(np.isinf(thetas)):
             raise Exception('Inf detected in theta(t), please remove.')
+            return
 
         # convert to screen coordinates
         xs *= (w/x_scale)
@@ -334,7 +340,7 @@ class Travel(inkex.Effect):
 
                 for path_component, child in zip(path_components, children):
                     attribs = {
-                        k: child.get(k) for k in obj.keys()
+                        k: child.get(k) for k in child.keys()
                     }
 
                     attribs['d'] = simplepath.formatPath(path_component)
@@ -342,7 +348,6 @@ class Travel(inkex.Effect):
                     child_copy = inkex.etree.SubElement(group_, child.tag, attribs)
 
             else:
-                # TODO: break combined paths into originals
                 attribs = {
                     k: obj.get(k) for k in obj.keys()
                 }

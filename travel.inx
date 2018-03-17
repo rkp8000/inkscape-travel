@@ -8,7 +8,7 @@
             <param name="x_scale" type="float" max="10000" precision="3" _gui-text="X scale:">0</param>
             <param name="y_scale" type="float" max="10000" precision="3" _gui-text="Y scale:">0</param>
             
-            <param name="t_start" type="float" max="10000" precision="3" _guit-text="start time">0</param>
+            <param name="t_start" type="float" max="10000" precision="3" _gui-text="start time">0</param>
             <param name="t_end" type="float" max="10000" precision="3" _gui-text="end time">1</param>
 
             <_param name="timing" type="description" xml:space="preserve">
@@ -31,7 +31,10 @@
         </page>
         <page name="help" _gui-text="Help">
             <_param name="help" type="description" xml:space="preserve">
-                Extension for copying an object along a precise parametric trajectory.
+Copy an object along a precise parametric trajectory.
+
+See https://github.com/rkp8000/inkscape-travel for instructions and usage examples.
+
             </_param>
         </page>
     </param>
