@@ -6,8 +6,13 @@ Two objects must be selected to use this extension: a rectangle and a template. 
 
 Specify the timepoints at which your template will be copied using "start time", "end time", and either "number of steps", "fps", or "time interval". For example, if "start time" is 1, "end time" is 2, and "number of steps" is 6, then 6 copies of the template will be made, corresponding to times 1, 1.2, 1.4, 1.6, 1.8, and 2.0. If "number of steps" is zero, then "fps" can be used to specify frames per second, and if "fps" is also zero, "time interval" can be used to specify the interval between time points from "start time" to "end time".
 
-Example 1:
+### Example 1:
 
 ![cosine_1](cosine_1.png "Cosine 1") 
 
 ![cosine_2](cosine_2.png "Cosine 2") 
+
+### Example 2:
+
+![fan 1](fan_1.png "Fan 1")
+![fan 2](fan_2.png "Fan 2")
