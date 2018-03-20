@@ -23,13 +23,9 @@ Note: the rotation anchor is at the bottom of the plume.
 
 ### Installation
 
-Click "Clone or Download" and select "Download Zip".
+Click "Clone or Download" at the upper left of this page and select "Download Zip". Extract the zip file. As per the [Inkscape website](https://inkscape.org/en/gallery/%3Dextension/): "Copy the files into the directory listed at Edit > Preferences > System: User extensions. After a restart of Inkscape, the new extension will be available."
 
-Extract the zip file and copy the files travel.inx and travel.py into your Inkscape user extensions folder. On Mac OS X this is located in /Users/<my_username>/.config/inkscape/extensions. 
-
-(Note, you might not be able to see the hidden .config folder automatically, so an easy way to access it is by selecting "Go" --> "Go to Folder" from the Finder menu and typing in "/Users/<my_username>/.config". For more help installing Inkscape extensions see [https://inkscape.org/en/gallery/%3Dextension/](https://inkscape.org/en/gallery/%3Dextension/).)
-
-Once you've copied travel.inx and travel.py into your extensions folder, you should be able to access it within Inkscape under "Extensions" --> "Render" --> "Travel".
+This extension will be under "Extensions" --> "Render" --> "Travel".
 
 ### Usage
 
