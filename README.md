@@ -1,8 +1,24 @@
 # Inkscape Travel Extension
 
-(scroll down for easy installation instructions)
-
 Copy an object along a precise parametric trajectory.
+
+## Scroll down for installation instructions
+
+## Example 1:
+
+![cosine_1](cosine_1.png "Cosine 1") 
+
+Result:
+
+![cosine_2](cosine_2.png "Cosine 2") 
+
+## Example 2:
+
+![fan 1](fan_1.png "Fan 1")
+
+Result:
+
+![fan 2](fan_2.png "Fan 2")
 
 Select two objects to use this extension: a rectangle and a template. The rectangle must be below the template, and the template must be a path or group of paths. If any path within the template has "arc" elements (e.g. ellipse/arc objects that have been converted to paths) you will encounter errors using the rotation function (sorry, unfortunately this isn't an easy fix).
 
@@ -13,22 +29,6 @@ Next, write in equations for x(t) and y(t) using Python syntax (e.g. x = t, y = 
 The equations for x_size and y_size are relative to the size of the object. E.g. if x_size(t) = 1, and y_size(t) = t, then the width of the copies will be identical to the template, but their height will increase with increasing t.
 
 Finally, specify the rotation angle (theta) as a function of time.
-
-### Example 1:
-
-![cosine_1](cosine_1.png "Cosine 1") 
-
-Result:
-
-![cosine_2](cosine_2.png "Cosine 2") 
-
-### Example 2:
-
-![fan 1](fan_1.png "Fan 1")
-
-Result:
-
-![fan 2](fan_2.png "Fan 2")
 
 # Installation
 
