@@ -12,7 +12,8 @@
 
 ![cosine_2](cosine_2.png "Cosine 2") 
 
-## Example 2 (Note: the rotation anchor is at the bottom of the plume):
+## Example 2:
+Note: the rotation anchor is at the bottom of the plume.
 
 ![fan 1](fan_1.png "Fan 1")
 
