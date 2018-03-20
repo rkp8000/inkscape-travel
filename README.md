@@ -2,7 +2,7 @@
 
 ## Copy an object along a precise parametric trajectory.
 
-### (Scroll down for installation instructions)
+### (Scroll down for usage and installation instructions)
 
 ## Example 1:
 
@@ -19,6 +19,8 @@ Result:
 Result:
 
 ![fan 2](fan_2.png "Fan 2")
+
+# Usage
 
 Select two objects to use this extension: a rectangle and a template. The rectangle must be below the template, and the template must be a path or group of paths. If any path within the template has "arc" elements (e.g. ellipse/arc objects that have been converted to paths) you will encounter errors using the rotation function (sorry, unfortunately this isn't an easy fix).
 
