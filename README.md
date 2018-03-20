@@ -8,15 +8,15 @@
 
 ![cosine_1](cosine_1.png "Cosine 1") 
 
-Result:
+## Result:
 
 ![cosine_2](cosine_2.png "Cosine 2") 
 
-## Example 2:
+## Example 2 (Note: the rotation anchor is at the bottom of the plume):
 
 ![fan 1](fan_1.png "Fan 1")
 
-Result:
+## Result:
 
 ![fan 2](fan_2.png "Fan 2")
 
