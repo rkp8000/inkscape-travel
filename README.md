@@ -26,11 +26,11 @@ Select two objects to use this extension: a rectangle and a template. The rectan
 
 Specify the timepoints at which your template will be copied using "start time", "end time", and either "number of steps", "fps", or "time interval". For example, if "start time" is 1, "end time" is 2, and "number of steps" is 6, then 6 copies of the template will be made, corresponding to times 1, 1.2, 1.4, 1.6, 1.8, and 2.0. If "number of steps" is zero, then "fps" can be used to specify frames per second, and if "fps" is also zero, "time interval" can be used to specify the interval between time points from "start time" to "end time".
 
-Next, write in equations for x(t) and y(t) using Python syntax (e.g. x = t, y = t ** 2 yields part of a parabola). The units of x and y are relative to the size of the rectangle, for example, if X scale = 2, then one rectangle width corresponds to 2 units along the x-axis. If Y scale = 3, then one rectangle height corresponds to 3 units along the y-axis.
+Next, write in equations for x(t) and y(t) using Python syntax (e.g. x = t, y = t ** 2 yields part of a parabola). The units of x and y are relative to the size of the rectangle, for example, if X scale = 2, then one rectangle width corresponds to 2 units along the x-axis. If Y scale = 3, then one rectangle height corresponds to 3 units along the y-axis. The point (0, 0) corresponds to the lower left corner of the rectangle.
 
 The equations for x_size and y_size are relative to the size of the object. E.g. if x_size(t) = 1, and y_size(t) = t, then the width of the copies will be identical to the template, but their height will increase with increasing t.
 
-Finally, specify the rotation angle (theta) as a function of time.
+Finally, specify the rotation angle (theta) as a function of time. If the rotation anchor is set, the object will be rotated around it, otherwise it will be rotated around its center.
 
 # Installation
 
