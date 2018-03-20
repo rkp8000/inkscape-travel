@@ -27,7 +27,7 @@
             <param name="x_size_eqn" type="string" _gui-text="x_size(t) = "></param>
             <param name="y_size_eqn" type="string" _gui-text="y_size(t) = "></param>
             
-            <param name="theta_eqn" type="string" _gui-text="theta(t) = "></param>
+            <param name="theta_eqn" type="string" _gui-text="theta(t) (in degrees) = "></param>
         </page>
         <page name="help" _gui-text="Help">
             <_param name="help" type="description" xml:space="preserve">
