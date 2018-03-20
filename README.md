@@ -1,27 +1,37 @@
-# Inkscape Travel Extension
+### Inkscape Travel Extension
 
-## Copy an object along a precise parametric trajectory.
+Copy an object along a precise parametric trajectory.
 
-### (Scroll down for usage and installation instructions)
+(Scroll down for usage and installation instructions)
 
-## Example 1:
+#### Example 1:
 
 ![cosine_1](cosine_1.png "Cosine 1") 
 
-## Result:
+#### Result:
 
 ![cosine_2](cosine_2.png "Cosine 2") 
 
-## Example 2:
+#### Example 2:
 Note: the rotation anchor is at the bottom of the plume.
 
 ![fan 1](fan_1.png "Fan 1")
 
-## Result:
+#### Result:
 
 ![fan 2](fan_2.png "Fan 2")
 
-# Usage
+### Installation
+
+Click "Clone or Download" and select "Download Zip".
+
+Extract the zip file and copy the files travel.inx and travel.py into your Inkscape user extensions folder. On Mac OS X this is located in /Users/<my_username>/.config/inkscape/extensions. 
+
+(Note, you might not be able to see the hidden .config folder automatically, so an easy way to access it is by selecting "Go" --> "Go to Folder" from the Finder menu and typing in "/Users/<my_username>/.config". For more help installing Inkscape extensions see [https://inkscape.org/en/gallery/%3Dextension/](https://inkscape.org/en/gallery/%3Dextension/).)
+
+Once you've copied travel.inx and travel.py into your extensions folder, you should be able to access it within Inkscape under "Extensions" --> "Render" --> "Travel".
+
+### Usage
 
 Select two objects to use this extension: a rectangle and a template. The rectangle must be below the template, and the template must be a path or group of paths. If any path within the template has "arc" elements (e.g. ellipse/arc objects that have been converted to paths) you will encounter errors using the rotation function (sorry, unfortunately this isn't an easy fix).
 
@@ -32,13 +42,3 @@ Next, write in equations for x(t) and y(t) using Python syntax (e.g. x = t, y = 
 The equations for x_size and y_size are relative to the size of the object. E.g. if x_size(t) = 1, and y_size(t) = t, then the width of the copies will be identical to the template, but their height will increase with increasing t.
 
 Finally, specify the rotation angle (theta) as a function of time. If the rotation anchor is set, the object will be rotated around it, otherwise it will be rotated around its center.
-
-# Installation
-
-Click "Clone or Download" and select "Download Zip".
-
-Extract the zip file and copy the files travel.inx and travel.py into your Inkscape user extensions folder. On Mac OS X this is located in /Users/<my_username>/.config/inkscape/extensions. 
-
-(Note, you might not be able to see the hidden .config folder automatically, so an easy way to access it is by selecting "Go" --> "Go to Folder" from the Finder menu and typing in "/Users/<my_username>/.config". For more help installing Inkscape extensions see [https://inkscape.org/en/gallery/%3Dextension/](https://inkscape.org/en/gallery/%3Dextension/).)
-
-Once you've copied travel.inx and travel.py into your extensions folder, you should be able to access it within Inkscape under "Extensions" --> "Render" --> "Travel".
