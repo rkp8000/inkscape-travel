@@ -8,8 +8,8 @@
             <param name="x_scale" type="float" max="10000" precision="3" _gui-text="X scale:">1</param>
             <param name="y_scale" type="float" max="10000" precision="3" _gui-text="Y scale:">1</param>
             
-            <param name="t_start" type="float" max="10000" precision="3" _gui-text="start time">0</param>
-            <param name="t_end" type="float" max="10000" precision="3" _gui-text="end time">1</param>
+            <param name="t_start" type="float" max="10000" min="-10000" precision="4" _gui-text="start time">0</param>
+            <param name="t_end" type="float" max="10000" min="-10000" precision="4" _gui-text="end time">1</param>
 
             <_param name="timing" type="description" xml:space="preserve">
                 Specify one of the following:
