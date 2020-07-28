@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8 
+#!/usr/bin/env python3
 
 """
 Copyright (C) 2018 Rich Pang, rpang.contact@gmail.com.
@@ -20,11 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 from __future__ import division
-
 from copy import deepcopy
-import inkex, cubicsuperpath, pathmodifier, simplestyle, simplepath, simpletransform
+import inkex
+from inkex.paths import Path, CubicSuperPath
+import simplepath
+from inkex.transforms import Transform 
 import numpy as np
-
+from lxml import etree
 
 # rename common numpy operations
 abs = np.abs
@@ -40,7 +41,7 @@ pi = np.pi
 
 __version__ = '0.1'
 
-inkex.localize()
+inkex.localization.localize
 
 def split(l, sizes):
     """Split a list into sublists of specific sizes."""
@@ -64,36 +65,21 @@ class Travel(inkex.Effect):
         inkex.Effect.__init__(self)
         
         # get params entered by user
-        self.OptionParser.add_option(
-            '', '--x_scale', action='store', type='float', dest='x_scale', default=0, help='x scale')
-        self.OptionParser.add_option(
-            '', '--y_scale', action='store', type='float', dest='y_scale', default=0, help='y scale')
-        self.OptionParser.add_option(
-            '', '--t_start', action='store', type='float', dest='t_start', default=0, help='t start')
-        self.OptionParser.add_option(
-            '', '--t_end', action='store', type='float', dest='t_end', default=1, help='t_end')
-        self.OptionParser.add_option(
-            '', '--n_steps', action='store', type='int', dest='n_steps', default=10, help='num steps')
-        self.OptionParser.add_option(
-            '', '--fps', action='store', type='float', dest='fps', default=0, help='fps')
-        self.OptionParser.add_option(
-            '', '--dt', action='store', type='float', dest='dt', default=0, help='dt')
-        self.OptionParser.add_option(
-            '', '--x_eqn', action='store', type='string', dest='x_eqn', default='', help='x')
-        self.OptionParser.add_option(
-            '', '--y_eqn', action='store', type='string', dest='y_eqn', default='', help='y')
-        self.OptionParser.add_option(
-            '', '--x_size_eqn', action='store', type='string', dest='x_size_eqn', default='', help='x size')
-        self.OptionParser.add_option(
-            '', '--y_size_eqn', action='store', type='string', dest='y_size_eqn', default='', help='y size')
-        self.OptionParser.add_option(
-            '', '--theta_eqn', action='store', type='string', dest='theta_eqn', default='', help='theta')
-        self.OptionParser.add_option(
-            '', '--active-tab', action='store', type='string', dest='active_tab', default='options', help='active tab')
+        self.arg_parser.add_argument('--x_scale', type=float, default=0, help='x scale')
+        self.arg_parser.add_argument('--y_scale', type=float, default=0, help='y scale')
+        self.arg_parser.add_argument('--t_start', type=float, default=0, help='t start')
+        self.arg_parser.add_argument('--t_end', type=float, default=1, help='t_end')
+        self.arg_parser.add_argument('--n_steps', type=int, default=10, help='num steps')
+        self.arg_parser.add_argument('--fps', type=float, default=0, help='fps')
+        self.arg_parser.add_argument('--dt', type=float, default=0, help='dt')
+        self.arg_parser.add_argument('--x_eqn', default='', help='x')
+        self.arg_parser.add_argument('--y_eqn', default='', help='y')
+        self.arg_parser.add_argument('--x_size_eqn', default='', help='x size')
+        self.arg_parser.add_argument('--y_size_eqn', default='', help='y size')
+        self.arg_parser.add_argument('--theta_eqn', default='', help='theta')
+        self.arg_parser.add_argument('--active-tab', default='options', help='active tab')
         
     def effect(self):
-
-        # get user-entered params
         x_scale = self.options.x_scale
         y_scale = self.options.y_scale
         
@@ -113,12 +99,12 @@ class Travel(inkex.Effect):
 
         # get doc root
         svg = self.document.getroot()
-        doc_w = self.unittouu(svg.get('width'))
-        doc_h = self.unittouu(svg.get('height'))
+        doc_w = self.svg.unittouu(svg.get('width'))
+        doc_h = self.svg.unittouu(svg.get('height'))
 
         # get selected items and validate
-        selected = pathmodifier.zSort(self.document.getroot(), self.selected.keys())
-
+        selected = self.svg.get_z_selected()
+		
         if not selected:
             inkex.errormsg('Exactly two objects must be selected: a rect and a template. See "help" for details.')
             return
@@ -127,14 +113,14 @@ class Travel(inkex.Effect):
             return
 
         # rect
-        rect = self.selected[selected[0]]
+        rect = self.svg.selected[self.options.ids[0]]
 
         if not rect.tag.endswith('rect'):
             inkex.errormsg('Bottom object must be rect. See "help" for usage.')
             return
 
         # object
-        obj = self.selected[selected[1]]
+        obj = self.svg.selected[self.options.ids[1]]
 
         if not (obj.tag.endswith('path') or obj.tag.endswith('g')):
             inkex.errormsg('Template object must be path or group of paths. See "help" for usage.')
@@ -164,7 +150,7 @@ class Travel(inkex.Effect):
         y_0 = y_rect + h
 
         # get object path(s)
-        obj_ps = [simplepath.parsePath(obj_.get('d')) for obj_ in objs]
+        obj_ps = [Path(obj_.get('d')) for obj_ in objs]
         n_segs = [len(obj_p_) for obj_p_ in obj_ps]
         obj_p = sum(obj_ps, [])
 
@@ -216,9 +202,9 @@ class Travel(inkex.Effect):
         ys += y_0
 
         # get obj center
-        b_box = simpletransform.refinedBBox(cubicsuperpath.CubicSuperPath(obj_p))
-        c_x = 0.5 * (b_box[0] + b_box[1])
-        c_y = 0.5 * (b_box[2] + b_box[3])
+        b_box = Path(Path(obj_p)).bounding_box()
+        c_x = 0.5 * (b_box.left + b_box.right)
+        c_y = 0.5 * (b_box.top + b_box.bottom)
 
         # get rotation anchor
         if any([k.endswith('transform-center-x') for k in obj.keys()]):
@@ -233,10 +219,10 @@ class Travel(inkex.Effect):
 
         # compute new paths
         for x, y, x_size, y_size, theta in zip(xs, ys, x_sizes, y_sizes, thetas):
-
             path = deepcopy(obj_p)
 
             # move to origin
+            #Path(path).translate(-x_0, -y_0) 
             simplepath.translatePath(path, -x_0, -y_0)
 
             # move rotation anchor accordingly
@@ -244,6 +230,7 @@ class Travel(inkex.Effect):
             r_y_1 = r_y - y_0
 
             # scale
+            #Path(path).scale(x_size, y_size)
             simplepath.scalePath(path, x_size, y_size)
 
             # scale rotation anchor accordingly
@@ -251,6 +238,7 @@ class Travel(inkex.Effect):
             r_y_2 = r_y_1 * y_size
 
             # move to final location
+            #Path(path).translate(x, y)
             simplepath.translatePath(path, x, y)
 
             # move rotation anchor accordingly
@@ -258,39 +246,32 @@ class Travel(inkex.Effect):
             r_y_3 = r_y_2 + y
 
             # rotate
-            simplepath.rotatePath(path, -theta, cx=r_x_3, cy=r_y_3)
-
+            #simplepath.rotatePath(path, -theta, cx=r_x_3, cy=r_y_3)
+            Path(path).rotate(-theta, (r_x_3, r_y_3))
             paths.append(path)
 
-        parent = self.current_layer
-        group = inkex.etree.SubElement(parent, inkex.addNS('g', 'svg'), {})
+        parent = self.svg.get_current_layer()
+        group = etree.SubElement(parent, inkex.addNS('g', 'svg'), {})
 
         for path in paths:
 
             if is_group:
-                group_ = inkex.etree.SubElement(group, inkex.addNS('g', 'svg'), {})
+                group_ = etree.SubElement(group, inkex.addNS('g', 'svg'), {})
                 path_components = split(path, n_segs)
 
                 for path_component, child in zip(path_components, children):
                     attribs = {
                         k: child.get(k) for k in child.keys()
                     }
-
-                    attribs['d'] = simplepath.formatPath(path_component)
-
-                    child_copy = inkex.etree.SubElement(group_, child.tag, attribs)
+                    attribs['d'] = str(Path(path_component))
+                    child_copy = etree.SubElement(group_, child.tag, attribs)
 
             else:
                 attribs = {
                     k: obj.get(k) for k in obj.keys()
                 }
+                attribs['d'] = str(Path(path))
+                obj_copy = etree.SubElement(group, obj.tag, attribs)
 
-                attribs['d'] = simplepath.formatPath(path)
-
-                obj_copy = inkex.etree.SubElement(group, obj.tag, attribs)
-
-        
 if __name__ == '__main__':
-    e = Travel()
-    e.affect()
-
+    Travel().run()
