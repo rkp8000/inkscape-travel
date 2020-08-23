@@ -22,7 +22,6 @@ from __future__ import division
 from copy import deepcopy
 import inkex
 from inkex.paths import Path, CubicSuperPath
-import simplepath
 from inkex.transforms import Transform 
 import numpy as np
 from lxml import etree
@@ -38,10 +37,7 @@ log10 = np.log10
 
 pi = np.pi
 
-
 __version__ = '0.1'
-
-inkex.localization.localize
 
 def split(l, sizes):
     """Split a list into sublists of specific sizes."""
@@ -103,7 +99,7 @@ class Travel(inkex.Effect):
         doc_h = self.svg.unittouu(svg.get('height'))
 
         # get selected items and validate
-        selected = self.svg.get_z_selected()
+        selected = svg.selection.paint_order()
 		
         if not selected:
             inkex.errormsg('Exactly two objects must be selected: a rect and a template. See "help" for details.')
@@ -202,7 +198,7 @@ class Travel(inkex.Effect):
         ys += y_0
 
         # get obj center
-        b_box = Path(Path(obj_p)).bounding_box()
+        b_box = Path(obj_p).bounding_box()
         c_x = 0.5 * (b_box.left + b_box.right)
         c_y = 0.5 * (b_box.top + b_box.bottom)
 
@@ -222,32 +218,28 @@ class Travel(inkex.Effect):
             path = deepcopy(obj_p)
 
             # move to origin
-            #Path(path).translate(-x_0, -y_0) 
-            simplepath.translatePath(path, -x_0, -y_0)
+            path = Path(path).translate(-x_0, -y_0) 
 
             # move rotation anchor accordingly
             r_x_1 = r_x - x_0
             r_y_1 = r_y - y_0
 
             # scale
-            #Path(path).scale(x_size, y_size)
-            simplepath.scalePath(path, x_size, y_size)
+            path = Path(path).scale(x_size, y_size)
 
             # scale rotation anchor accordingly
             r_x_2 = r_x_1 * x_size
             r_y_2 = r_y_1 * y_size
 
             # move to final location
-            #Path(path).translate(x, y)
-            simplepath.translatePath(path, x, y)
+            path = Path(path).translate(x, y)
 
             # move rotation anchor accordingly
             r_x_3 = r_x_2 + x
             r_y_3 = r_y_2 + y
 
             # rotate
-            #simplepath.rotatePath(path, -theta, cx=r_x_3, cy=r_y_3)
-            Path(path).rotate(-theta, (r_x_3, r_y_3))
+            path = Path(path).rotate(-theta, (r_x_3, r_y_3))
             paths.append(path)
 
         parent = self.svg.get_current_layer()
@@ -273,5 +265,4 @@ class Travel(inkex.Effect):
                 attribs['d'] = str(Path(path))
                 obj_copy = etree.SubElement(group, obj.tag, attribs)
 
-if __name__ == '__main__':
-    Travel().run()
+Travel().run()
